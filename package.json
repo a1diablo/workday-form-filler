@@ -1,11 +1,11 @@
 {
-  "name": "chrome-extension-boilerplate-react",
+  "name": "workday-form-filler",
   "version": "2.7.0",
-  "description": "A chrome extension boilerplate built with React 16 and Webpack 4",
+  "description": "A chrome extension to fill workday application forms",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/lxieyang/chrome-extension-boilerplate-react.git"
+    "url": "https://github.com/a1diablo/workday-form-filler"
   },
   "scripts": {
     "build": "node utils/build.js",
