@@ -17,39 +17,53 @@ function getLabelForId(label, index) {
 const contactInputs = [
   {
     label: 'Country',
-    value: 'Ireland',
   },
   {
     label: 'Given Name',
-    value: 'Lulu',
     index: 3,
   },
   {
     label: 'Family Name',
-    value: 'Niu niu',
     index: 3,
   },
   {
     label: 'Address Line 1',
-    value: '10 Linnetfields Park, Castaheany, Clonee',
   },
   {
     label: 'Postal Code',
-    value: 'D15 N6F5',
   },
   {
-    label: 'City',
-    value: 'Dublin',
+    label: 'County',
   },
   {
     label: 'Phone Number',
-    value: '873444925',
   },
 ];
+
+function recordContact(label, index) {
+  switch (label) {
+    case 'Country':
+    case 'County':
+      return $(getLabelForId(label)).children().first().children().text();
+    default:
+      return $(getLabelForId(label, index)).val();
+  }
+}
+
+function recordContactForm() {
+  const contactForm = contactInputs.map((contactInput) => {
+    return {
+      ...contactInput,
+      value: recordContact(contactInput.label, contactInput.index),
+    };
+  });
+  chrome.storage.sync.set({ contactForm });
+}
 
 function fillContact(label, value, index) {
   switch (label) {
     case 'Country':
+    case 'County':
       $(getLabelForId(label)).children().first().children().text(value);
       break;
     default:
@@ -59,9 +73,11 @@ function fillContact(label, value, index) {
 }
 
 function fillContactForm() {
-  contactInputs.forEach((contactInput) =>
-    fillContact(contactInput.label, contactInput.value, contactInput.index)
-  );
+  chrome.storage.sync.get(['contactForm'], function (result) {
+    result.contactForm.forEach((contactInput) =>
+      fillContact(contactInput.label, contactInput.value, contactInput.index)
+    );
+  });
 }
 
 chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
@@ -70,6 +86,15 @@ chrome.runtime.onMessage.addListener(function (request, sender, sendResponse) {
       ? 'from a content script:' + sender.tab.url
       : 'from the extension'
   );
-  if (request.greeting == 'hello') sendResponse({ farewell: 'goodbye' });
-  fillContactForm();
+  switch (request.message) {
+    case 'record':
+      recordContactForm();
+      break;
+    case 'fill':
+      fillContactForm();
+      break;
+    default:
+      console.log('Unknown message');
+      break;
+  }
 });

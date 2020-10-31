@@ -18,6 +18,7 @@
       "css": ["content.styles.css"]
     }
   ],
+  "permissions": ["storage"],
   "web_accessible_resources": [
     "content.styles.css",
     "icon-128.png",
